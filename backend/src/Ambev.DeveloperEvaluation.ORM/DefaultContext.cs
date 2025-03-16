@@ -10,14 +10,22 @@ public class DefaultContext : DbContext
 {
     public DbSet<User> Users { get; set; }
 
+    public DbSet<Product> Products { get; set; }
+
+    public DbSet<Sale> Sales { get; set; }
+
+    public DbSet<SaleItem> SaleItems { get; set; }
+
     public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
     {
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Sale>().ToTable("Sales");
+        modelBuilder.Entity<SaleItem>().ToTable("SaleItem");
+        modelBuilder.Entity<Product>().ToTable("Product");
     }
 }
 public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
@@ -34,7 +42,7 @@ public class YourDbContextFactory : IDesignTimeDbContextFactory<DefaultContext>
 
         builder.UseNpgsql(
                connectionString,
-               b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.WebApi")
+               b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
         );
 
         return new DefaultContext(builder.Options);
